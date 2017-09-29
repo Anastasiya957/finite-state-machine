@@ -12,7 +12,6 @@ class FSM {
         } catch(err) {
             throw err;
         }
-    
     }
 
     /**
@@ -29,8 +28,16 @@ class FSM {
      */
     changeState(state) {
         try {
+            if ( this.getStates().indexOf(state) == -1 ) {
+                throw new Error("State isn't exist.");
+            }
+
+            for (var i = this.pointer + 1; i < this.history.length; i++) {
+                this.history.pop();
+            }
             this.history.push(state);
-            this.pointer = this.history.length - 1;
+            this.pointer += 1;
+
         } catch(err) {
             throw err;
         }
@@ -41,8 +48,20 @@ class FSM {
      * @param event
      */
     trigger(event) {
-        this.history.push( this.states[this.history[this.pointer]].transitions[event] );
-        this.pointer = this.history.length - 1;;
+        try {
+            if ( !this.states[this.history[this.pointer]].transitions[event] ) {
+                throw new Error("Event in current state isn't exist.");
+            }
+
+            for (var i = this.pointer + 1; i < this.history.length; i++) {
+                this.history.pop();
+            }   
+            this.history.push( this.states[this.history[this.pointer]].transitions[event] );
+            this.pointer += 1;
+            
+        } catch(err) {
+            throw err;
+        }
     }
 
     /**
